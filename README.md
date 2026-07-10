@@ -2,6 +2,20 @@
 
 Zero-log, anonymous, peer-to-peer video chat and file transfer in the browser. No accounts, no database, no message or media storage — the server only exists to help two browsers find each other and exchange WebRTC handshake data.
 
+## Screenshots
+
+<table>
+<tr>
+<td align="center"><img src="docs/screenshots/landing.png" width="200"><br><sub>Landing</sub></td>
+<td align="center"><img src="docs/screenshots/waiting-room.png" width="200"><br><sub>Waiting room (QR + code)</sub></td>
+<td align="center"><img src="docs/screenshots/call-sas.png" width="200"><br><sub>Call + SAS verification</sub></td>
+<td align="center"><img src="docs/screenshots/chat.png" width="200"><br><sub>Chat</sub></td>
+<td align="center"><img src="docs/screenshots/device-switcher.png" width="200"><br><sub>Camera/mic switcher</sub></td>
+</tr>
+</table>
+
+<sub>Captured headlessly for documentation, so the video feed shown is Chromium's synthetic test camera, not a real webcam.</sub>
+
 ## How it works
 
 1. One person clicks **Create Room** and gets a 6-character room code (and a QR code / shareable link).
@@ -17,10 +31,10 @@ Zero-log, anonymous, peer-to-peer video chat and file transfer in the browser. N
 - **P2P file transfer** over a negotiated WebRTC data channel, chunked (16KB) with backpressure handling for large files
 - **Text chat** over the same data channel — a fallback way to communicate that doesn't depend on camera/mic access or media negotiation succeeding
 - **Camera/microphone switcher** — pick a different input device mid-call without restarting the call (uses `RTCRtpSender.replaceTrack`, no renegotiation)
-- **Room codes + QR codes** for joining (ambiguous characters like `0`/`O`/`1`/`I` excluded from codes)
-- **SAS fingerprint verification** to detect signaling-layer MITM
+- **Room codes + QR codes** for joining, entered via individual OTP-style character boxes (ambiguous characters like `0`/`O`/`1`/`I` excluded from codes)
+- **SAS fingerprint verification** to detect signaling-layer MITM, with explicit "It matches" / "Doesn't match" actions — a mismatch ends the call immediately
 - **Mic/camera mute toggle** (track-level, no renegotiation)
-- **Mobile-friendly** — the call screen fits the visible viewport on phones (no scrolling to see the video), touch-sized controls, and a responsive control bar
+- **Mobile-friendly** — the call screen fits the visible viewport on phones (no scrolling to see the video), a large touch-sized control bar (56px+ targets), and a responsive layout throughout
 - **Auto-expiring rooms** — idle or single-occupant rooms are purged after a TTL
 - **Per-socket rate limiting** on room create/join
 - **Zero request logging** — no morgan/access logs, no IP-keyed state
@@ -75,6 +89,8 @@ public/
   index.html            App shell
   app.js                Client: signaling, WebRTC, file transfer, chat, device switching, UI state
   vendor/               Vendored, version-pinned third-party assets (Tailwind, QR code)
+docs/
+  screenshots/          README screenshots
 coturn/
   turnserver.conf.example  Sample TURN config for NAT-traversal fallback
 Dockerfile              Multi-stage build (deps -> runtime), runs as non-root `node` user
